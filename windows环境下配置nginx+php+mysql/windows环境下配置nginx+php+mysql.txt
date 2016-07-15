@@ -1,0 +1,121 @@
+详见：http://jingyan.baidu.com/article/7f41ecec0c5b27593d095cc5.html。
+
+
+**************************************************************************************
+我的具体配置如下：我的php放置目录是：“D:\yuxiang\env\php\phpts56”
+
+	1、在官网下载nginx稳定版，解压放在“D:\yuxiang\env\nginx”下
+
+	2、打开“D:\yuxiang\env\nginx\conf”目录下的“nginx.conf”;
+
+	3、将上面第2步中打开的“nginx.conf”进行如下更改：
+
+		进入C:\nginx\conf文件夹内，记事本或写字板打开nginx的配置文件nginx.conf，配置nginx支持PHP和修改网站根目录D:\www，找到如下两处进行修改，		修改内容如下：
+
+		location / {
+
+			root   D:/www;
+
+     			index  index.php index.html index.htm;
+
+		}
+
+		# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+
+		#
+
+		location ~ \.php$ {
+
+		#   root           html;
+
+		     fastcgi_pass   127.0.0.1:9000;
+
+		     fastcgi_index  index.php;
+
+ 		    fastcgi_param  SCRIPT_FILENAME  D:/www$fastcgi_script_name;
+
+		     include        fastcgi_params;
+
+		}
+
+		注意：此处注意“D:/webserver”中的“/”，非windos下的“D:\webserver”。
+
+	4、网上下载:RunHiddenConsole.zip
+
+	5、解压RunHiddenConsole.zip 文件RunHiddenConsole.exe到“D:\yuxiang\env\nginx”下，已备后用。
+
+	6、解压RunHiddenConsole.zip 文件RunHiddenConsole.exe到“D:\yuxiang\env\php\phpts56”，已备后用。
+
+	7、配置“php.ini”文件：如下
+
+		;cgi.force_redirect = 1，删除前面的分号：cgi.force_redirect = 1
+
+		;cgi.fix_pathinfo=1，删除前面的分号：cgi.fix_pathinfo=1
+
+		;cgi.rfc2616_headers = 0，删除前面的分号：cgi.rfc2616_headers = 1
+
+	8、启动cmd窗口,切换到本机php目录：“D:\yuxiang\env\php\phpts56>”；
+
+		使用命令：RunHiddenConsole.exe php-cgi.exe -b 127.0.0.1:9000 -c php.ini 
+
+		使用命令： netstat -a ，回车显示如下信息
+
+		TCP 127.0.0.1:9000 HongJunWen-PC:0 LISTENING 
+
+		说明php-cgi启动成功。
+
+【该cmd命令窗口可关闭。至于nginx关闭或者重启后，是否需要重新走本步骤（仅限本第8步）命令，看情况了，还是走好些。】
+
+	9、经过上面8步，浏览器只能访问“D:\www”目录下的“nginx.conf”文件中设置“index  index.php index.html index.htm;”的几个以“index”开头的文件，
+		如果“D:\www”目录下没有“index”开头的文件，浏览器访问就好报错“403 forbidden”。
+
+	10、解决上面第9步不能访问D:/www根目录下文件目录列表的问题，需要如下操作：
+	
+		在location server 或 http段中加入：“autoindex on”-》自动显示目录，即：开启Nginx的目录文件列表功能
+
+		我的操作是这样：
+				http {
+    					include       mime.types;
+   					 default_type  application/octet-stream;
+
+
+					autoindex on;
+
+
+
+
+		至此，成功。
+
+	11、nginx的启动说明：
+				要是启动nginx服务的话，在我的“D:\yuxiang\env\nginx”	目录下有“nginx.exe”文件，双击即可启动nginx服务。
+
+				关闭nginx服务的话，需要打开“任务管理器”，在任务管理器列表结束该任务即可。
+
+				nginx的重启同上面一样，即在任务管理器结束任务，然后双击	“D:\yuxiang\env\nginx”目录下有“nginx.exe”文件，即可	
+
+
+
+********************************************************************************************************************************************************
+
+nginx隐藏版本号：
+
+		1、打开“php.ini”,加上
+					;我自己添加--用于隐藏nginx版本号
+					fastcgi_param SERVER_SOFTWARE nginx;
+
+		2、打开“nginx.conf”,在 http {—}里加上 server_tokens off; 
+
+		3、打开cmd窗口，切换到“php”目录下：执行：RunHiddenConsole.exe php-cgi.exe -b 127.0.0.1:9000 -c php.ini 
+
+		4、重启nginx。或者，打开cmd窗口，切换到“nginx”目录下，执行重启“nginx -s reload”。
+
+	成功。
+
+
+
+
+
+
+
+
+
